@@ -327,31 +327,46 @@
     <script>
         // 生成书评的主要函数
         function generateReview() {
-            const bookInput = document.querySelector('.book-input');
-            const bookTitle = bookInput.value.trim();
+            console.log('generateReview function called');
             
-            if (!bookTitle) {
-                alert('请输入书名或文章标题');
-                return;
-            }
+            try {
+                const bookInput = document.querySelector('.book-input');
+                if (!bookInput) {
+                    console.error('找不到输入框元素');
+                    alert('页面加载异常，请刷新页面重试');
+                    return;
+                }
+                
+                const bookTitle = bookInput.value.trim();
+                console.log('输入的书名:', bookTitle);
+                
+                if (!bookTitle) {
+                    alert('请输入书名或文章标题');
+                    return;
+                }
 
-            // 显示加载状态
-            showLoading();
-            
-            // 调用模拟的AI函数
-            mockCallAi(bookTitle)
-                .then(reviewData => {
-                    // 隐藏加载状态
-                    hideLoading();
-                    
-                    // 显示输出区域
-                    displayReview(reviewData);
-                })
-                .catch(error => {
-                    hideLoading();
-                    alert('生成失败，请重试');
-                    console.error(error);
-                });
+                // 显示加载状态
+                showLoading();
+                
+                // 调用模拟的AI函数
+                mockCallAi(bookTitle)
+                    .then(reviewData => {
+                        console.log('收到AI回复数据:', reviewData);
+                        // 隐藏加载状态
+                        hideLoading();
+                        
+                        // 显示输出区域
+                        displayReview(reviewData);
+                    })
+                    .catch(error => {
+                        console.error('AI调用出错:', error);
+                        hideLoading();
+                        alert('生成失败，请重试: ' + error.message);
+                    });
+            } catch (error) {
+                console.error('generateReview执行出错:', error);
+                alert('程序执行出错: ' + error.message);
+            }
         }
 
         // 模拟AI调用的函数
@@ -544,7 +559,7 @@
 
                      实用建议：不要带着"学习先进思想"的目的去读经典，而是带着"欣赏文化瑰宝"的心态。如此方能达到"无用之用，方为大用"的境界。`,
                     
-                    `《${bookTitle》这部经典，庄子会怎么评价呢？"无用之用，方为大用。"经典之所以为经典，就在于它超越了实用的范畴，成为了文化传承的载体。
+                    `《${bookTitle}》这部经典，庄子会怎么评价呢？"无用之用，方为大用。"经典之所以为经典，就在于它超越了实用的范畴，成为了文化传承的载体。
 
                      现代人读经典，容易犯两个错误：一是过度解读，二是过度崇古。过度解读就是把简单的东西说复杂，比如简单的爱情故事非要上升到人生哲学的高度；过度崇古就是把古代作品神圣化，觉得古人说什么都是对的。
 
@@ -706,16 +721,37 @@
             });
         }
 
-        // 回车键触发搜索
-        document.querySelector('.book-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                generateReview();
-            }
-        });
-
         // 页面加载完成后的初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('逍遥书斋已就绪');
+            
+            // 确保按钮事件绑定正确
+            const generateBtn = document.querySelector('.generate-btn');
+            const bookInput = document.querySelector('.book-input');
+            
+            if (generateBtn && bookInput) {
+                console.log('找到按钮和输入框，开始绑定事件');
+                
+                // 按钮点击事件
+                generateBtn.addEventListener('click', function(e) {
+                    console.log('按钮被点击');
+                    e.preventDefault();
+                    generateReview();
+                });
+                
+                // 输入框回车事件
+                bookInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        console.log('输入框按回车');
+                        e.preventDefault();
+                        generateReview();
+                    }
+                });
+                
+                console.log('事件绑定完成');
+            } else {
+                console.error('找不到按钮或输入框元素');
+            }
         });
 
         /* 
